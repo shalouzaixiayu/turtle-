@@ -12,18 +12,19 @@ class GetInitialDate(object):
     #  请更换你的纪念日， 如果数量很多， 可以生成列表，
     #  遍历传值，不懂的可以私聊我
     #  其实这个天数也可以直接从对象中传值过来，但是必须得是 ****-**-** 这样的格式
-    Initial_date = "2020-08-17"
+    Initial_date = "2018-08-17"
 
     def __init__(self):
         self.date_item = self.get_items
         self.now_date = self._get_now_date()
-        self.Initial_date_sum = self.get_sum_date(self.Initial_date)
-        self.now_date_sum = self.get_sum_date(self.now_date)
+        # self.Initial_date_sum = self.get_sum_date(self.Initial_date)
+        # self.now_date_sum = self.get_sum_date(self.now_date)
+        self.all_date = self.get_sum_date(self.Initial_date, self.now_date)
 
     def __str__(self):
         """稍微修饰一下,"""
         return f"我来啦".center(40,
-                             '-') + f"\n不错哟, 你们已经认识这么长时间了, 足足有 {self.now_date_sum - self.Initial_date_sum + 2} 天呢\n希望你们在接下里的时间, 能够更加细腻的陪伴,感谢有你!\n" + "我一直在!".center(
+                             '-') + f"\n不错哟, 你们已经认识这么长时间了, 足足有 {self.all_date} 天呢\n希望你们在接下里的时间, 能够更加细腻的陪伴,感谢有你!\n" + "我一直在!".center(
             40, '-')
 
     @property
@@ -43,15 +44,36 @@ class GetInitialDate(object):
             date_items[i] = s
         return date_items
 
-    def get_sum_date(self, date):
+    def get_sum_date(self, old_date, new_date):
         """ start sum the date """
-        year, month, date = map(int, date.split("-"))
-        is_leap = True if self._is_leap(year) else False
+        old_year, old_month, old_d = map(int, old_date.split("-"))
+        new_year, new_month, new_d = map(int, new_date.split('-'))
+        #  先计算初始日期的天数
+        is_leap = True if self._is_leap(old_year) else False
         if not is_leap:
-            The_date = self.date_item[month] + date
+            The_date = self.date_item[old_month] + old_d
         else:
-            The_date = self.date_item[month] + 1 + date
-        return The_date
+            The_date = self.date_item[old_month] + 1 + old_d
+            # 计算新的日期
+        is_leap_now = True if self._is_leap(new_year) else False
+        if not is_leap:
+            The_date_now = self.date_item[new_month] + new_d
+        else:
+            The_date_now = self.date_item[new_month] + 1 + new_d
+        # 比较
+
+        if old_year == new_year:
+            return The_date_now - The_date + 2
+        else:
+            # 2019  2020
+            ss = 0
+            for i in range(new_year - old_year):
+                if self._is_leap(old_year + i):
+                    s = 366
+                else:
+                    s = 365
+                ss += s
+            return ss + The_date_now - The_date + 2
 
     def _get_now_date(self):
         """Return the  localtime as: "****-**-**" date """
@@ -190,3 +212,4 @@ class Rose:
 
 
 a = Rose()
+# print(GetInitialDate())
